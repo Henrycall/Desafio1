@@ -1,0 +1,23 @@
+{
+  "name": "desafio1",
+  "version": "1.0.0",
+  "description": "criar uma api para consumir dados de cep",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Henrycall/Desafio1.git"
+  },
+  "author": "Higor Diego",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Henrycall/Desafio1/issues"
+  },
+  "homepage": "https://github.com/Henrycall/Desafio1#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "mongodb": "^4.1.2"
+  }
+}

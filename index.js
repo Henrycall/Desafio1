@@ -1,44 +1,33 @@
 require('dotenv').config()
-
 const express = require('express')
 const app = express()
-
-
-// Estudar sobre API e seus padrões.
-
-// http://localhost:${port}/desafio
-// METHOD: GET | POST | PUT | DELETE | PATCH
-// BODY: Copo da requisição
-// Methods: (POST | PUT | PATCH | DELETE)
-// QUERY(Query params | params) ?name=higor&email=diego key=value
-    // - é opcional
-// path (path params | path variable) /:id/:name/:email/:idade
-    // - é obrigatório
-// headers ({ key: value }) - a maioria das autorizações de api fica no header
-    // - headers os valores são opcional exceto content-type
-
-// middleware
-    // (req, res, next)
-    // req, res
-    // req, res, next
-
-// calculadora
-    // valor1 = 10
-    // valor2 = 20
-// rules internal
-    // valor3 = 30
-
-//
-// function middlewareValor(req, res, next) {
-//     req.query.valor3 = 30
-//     next()
-// }
+const { getCep } = require('./src/services')
+const { getCepDatabase, insertCepCollection } = require('./src/repository/cep')
+const { normalizeDataReturn, maskCep } = require('./src/helpers')
 
 // example one
-app.get('/api/cep/:cep', function(req, res){
-    const cep = req.params.cep
-    // continuar o desafio aqui
-    res.status(201).json(req.params)
+app.get('/api/cep/:cep', async (req, res ) =>{
+        // pego o cep que o usuário enviou
+        const cepParams = req.params.cep
+
+        // Colocando mascara para o cep
+        const cep = maskCep(cepParams)
+        // pesquiso no banco se tem
+        const result = await getCepDatabase(cep)
+
+        // caso tenha retorno para o usuário
+        if (result) return res.status(200).json(result)
+
+
+        // caso não tem, vou buscar na api de cep
+        const { data, status } = await getCep(cep)
+
+        // caso retorne algo la da api do cep tenho que inserir na minha collection
+        if (data) await insertCepCollection(data)
+
+        // retorno para o usuário o que ele pediu
+        return res.status(status).json(normalizeDataReturn(data))
+    
 })
 
 app.listen(3000, () => console.log('listing port http://localhost:3000'))
